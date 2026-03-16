@@ -64,6 +64,86 @@ Here are the official documents for Fish Audio S2, follow the instructions to ge
 > [!IMPORTANT]
 > **For SGLang server, please read [SGLang-Omni README](https://github.com/sgl-project/sglang-omni/blob/main/sglang_omni/models/fishaudio_s2_pro/README.md).**
 
+
+
+
+### Local WebUI Setup (with Whisper voice-cloning support)
+
+This repository includes a Gradio WebUI (`tools/run_webui.py`) that supports S2-Pro TTS, zero-shot voice cloning, and **auto-transcription of reference audio** via a local [OpenAI Whisper](https://github.com/openai/whisper) model.
+
+#### Prerequisites
+
+- **Python 3.10+** with pip
+- **FFmpeg** installed and on your system `PATH` (required for Whisper and audio handling).  
+  - Windows: download from [ffmpeg.org](https://ffmpeg.org/) and add the `bin` folder to `PATH`, or use `choco install ffmpeg`
+- **CUDA** (optional but recommended for GPU inference)
+
+#### Setup steps
+
+1. **Clone the repository** (or use your fork):
+   ```bash
+   git clone https://github.com/fishaudio/fish-speech.git
+   cd fish-speech
+   ```
+
+2. **Create and activate a virtual environment** (recommended):
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate   # Windows
+   # source .venv/bin/activate   # Linux / macOS
+   ```
+
+3. **Install project dependencies**  
+   Follow the official [Installation](https://speech.fish.audio/install/) guide (e.g. with `uv` or pip). Then install the extra dependencies used by the WebUI and Whisper:
+   ```bash
+   pip install -r requirements.txt
+   ```
+   The `requirements.txt` includes: `openai-whisper`, `torch`, `gradio`, `numpy`, `numba`, `tiktoken`, `soundfile`, `ffmpeg-python`, `loguru`, and related packages.
+
+4. **Download the S2-Pro model**  
+   Place the model files under `checkpoints/s2-pro` (e.g. from [HuggingFace fishaudio/s2-pro](https://huggingface.co/fishaudio/s2-pro)). You should have at least the LLaMA checkpoint and `codec.pth` in that directory.
+
+5. **Optional — Whisper for auto-transcription**  
+   To use the “Auto-transcribe with Whisper” button in the Reference Audio tab, place a Whisper model (e.g. `small`) under a directory such as `checkpoints/whisper-small-pt`. The first time you use the button, Whisper will load from this path (see `--whisper-model-dir` below). You can download the model via the [openai-whisper](https://github.com/openai/whisper) instructions or use an existing download.
+
+#### Run the WebUI
+
+
+
+From the repository root:
+
+```bash
+python tools/run_webui.py \
+  --llama-checkpoint-path checkpoints/s2-pro \
+  --decoder-checkpoint-path checkpoints/s2-pro/codec.pth \
+  --whisper-model-dir checkpoints/whisper-small-pt
+```
+
+- **`--llama-checkpoint-path`**: Directory containing the S2-Pro LLaMA weights (default: `checkpoints/s2-pro`).
+- **`--decoder-checkpoint-path`**: Path to the codec checkpoint, e.g. `checkpoints/s2-pro/codec.pth`.
+- **`--whisper-model-dir`**: Directory for the Whisper model used for reference-audio transcription (default: `checkpoints/whisper-small-pt`). Omit or leave default if you use the button.
+
+Other useful flags: `--device cuda`, `--half` (FP16), `--theme light` or `dark`, `--compile` for torch compile.
+
+After the models load, open the URL shown in the terminal (e.g. `http://127.0.0.1:7860`) in your browser.
+
+#### WebUI features
+
+- **Text-to-speech**: Enter text, optionally add emotion tags (e.g. `[laugh]`, `[whisper]`), and generate audio.
+- **Voice cloning**: In the “Reference Audio” tab, upload a short (5–10 s) reference clip and its **Reference Text** (exact transcription). The model will clone that voice.
+- **Auto-transcribe with Whisper**: After uploading reference audio, click **“Auto-transcribe with Whisper”** to fill the Reference Text field automatically using your local Whisper model. Requires `openai-whisper` and FFmpeg; model path is set by `--whisper-model-dir`.
+- **Advanced settings**: Chunk length, max new tokens, Top-P, temperature, repetition penalty, seed, and memory cache for references.
+
+
+Speech TAGS 
+"[pause]", "[emphasis]", "[laughing]", "[inhale]", "[chuckle]", "[tsk]",
+    "[singing]", "[excited]", "[laughing tone]", "[interrupting]", "[chuckling]",
+    "[excited tone]", "[volume up]", "[echo]", "[angry]", "[low volume]", "[sigh]",
+    "[low voice]", "[whisper]", "[screaming]", "[shouting]", "[loud]", "[surprised]",
+    "[short pause]", "[exhale]", "[delight]", "[panting]", "[audience laughter]",
+    "[with strong accent]", "[volume down]", "[clearing throat]", "[sad]",
+    "[moaning]", "[shocked]"
+
 ### For LLM Agent
 
 ```
