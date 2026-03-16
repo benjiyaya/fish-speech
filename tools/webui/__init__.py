@@ -3,10 +3,15 @@ from typing import Callable
 import gradio as gr
 
 from fish_speech.i18n import i18n
+from tools.webui.inference import get_whisper_transcribe_wrapper
 from tools.webui.variables import HEADER_MD, TEXTBOX_PLACEHOLDER
 
 
-def build_app(inference_fct: Callable, theme: str = "light") -> gr.Blocks:
+def build_app(
+    inference_fct: Callable,
+    theme: str = "light",
+    whisper_model_dir: str = "checkpoints/whisper-small-pt",
+) -> gr.Blocks:
     with gr.Blocks(theme=gr.themes.Base()) as app:
         gr.Markdown(HEADER_MD)
 
@@ -110,6 +115,11 @@ def build_app(inference_fct: Callable, theme: str = "light") -> gr.Blocks:
                                     placeholder="在一无所知中，梦里的一天结束了，一个新的「轮回」便会开始。",
                                     value="",
                                 )
+                            with gr.Row():
+                                transcribe_btn = gr.Button(
+                                    value="🎤 " + i18n("Auto-transcribe with Whisper"),
+                                    variant="secondary",
+                                )
 
             with gr.Column(scale=3):
                 with gr.Row():
@@ -150,6 +160,14 @@ def build_app(inference_fct: Callable, theme: str = "light") -> gr.Blocks:
             ],
             [audio, error],
             concurrency_limit=1,
+        )
+
+        # Whisper transcription
+        whisper_transcribe = get_whisper_transcribe_wrapper(whisper_model_dir)
+        transcribe_btn.click(
+            whisper_transcribe,
+            inputs=[reference_audio],
+            outputs=[reference_text],
         )
 
     return app

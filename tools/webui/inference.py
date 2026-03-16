@@ -1,9 +1,12 @@
 import html
 from functools import partial
-from typing import Any, Callable
+from typing import Any, Callable, Optional
+
+import gradio as gr
 
 from fish_speech.i18n import i18n
 from fish_speech.utils.schema import ServeReferenceAudio, ServeTTSRequest
+from tools.webui.whisper_utils import transcribe_reference_audio
 
 
 def inference_wrapper(
@@ -87,3 +90,28 @@ def get_inference_wrapper(engine) -> Callable:
         inference_wrapper,
         engine=engine,
     )
+
+
+def get_whisper_transcribe_wrapper(whisper_model_dir: str) -> Callable[[Optional[str]], str]:
+    """
+    Return a Gradio-friendly callable that transcribes reference audio using Whisper.
+    """
+
+    def _wrapper(reference_audio: Optional[str]) -> str:
+        if not reference_audio:
+            raise gr.Error(i18n("Please upload a reference audio file first."))
+
+        try:
+            # Let Whisper auto-detect language by default.
+            return transcribe_reference_audio(
+                audio_path=reference_audio,
+                model_dir=whisper_model_dir,
+                language=None,
+            )
+        except FileNotFoundError as exc:
+            raise gr.Error(i18n(str(exc)))
+        except Exception as exc:  # pragma: no cover - runtime failures
+            raise gr.Error(i18n(f"Whisper transcription error: {exc}"))
+
+    return _wrapper
+
