@@ -37,6 +37,12 @@ def parse_args():
     parser.add_argument("--compile", action="store_true")
     parser.add_argument("--max-gradio-length", type=int, default=0)
     parser.add_argument("--theme", type=str, default="light")
+    parser.add_argument(
+        "--whisper-model-dir",
+        type=Path,
+        default="checkpoints/whisper-small-pt",
+        help="Path to local Whisper 'small' model directory.",
+    )
 
     return parser.parse_args()
 
@@ -103,5 +109,9 @@ if __name__ == "__main__":
     # Get the inference function with the immutable arguments
     inference_fct = get_inference_wrapper(inference_engine)
 
-    app = build_app(inference_fct, args.theme)
+    app = build_app(
+        inference_fct,
+        theme=args.theme,
+        whisper_model_dir=str(args.whisper_model_dir),
+    )
     app.launch()
