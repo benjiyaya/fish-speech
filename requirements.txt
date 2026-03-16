@@ -1,0 +1,12 @@
+openai-whisper
+torch
+numpy
+numba
+tiktoken
+more-itertools
+tqdm
+soundfile
+ffmpeg-python
+gradio
+loguru
+
