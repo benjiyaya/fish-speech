@@ -123,6 +123,16 @@ python tools/run_webui_v2.py --llama-checkpoint-path checkpoints/s2-pro --decode
 
 ```
 
+Speech TAGS :
+"[pause]", "[emphasis]", "[laughing]", "[inhale]", "[chuckle]", "[tsk]",
+    "[singing]", "[excited]", "[laughing tone]", "[interrupting]", "[chuckling]",
+    "[excited tone]", "[volume up]", "[echo]", "[angry]", "[low volume]", "[sigh]",
+    "[low voice]", "[whisper]", "[screaming]", "[shouting]", "[loud]", "[surprised]",
+    "[short pause]", "[exhale]", "[delight]", "[panting]", "[audience laughter]",
+    "[with strong accent]", "[volume down]", "[clearing throat]", "[sad]",
+    "[moaning]", "[shocked]"
+    
+
 - **`--llama-checkpoint-path`**: Directory containing the S2-Pro LLaMA weights (default: `checkpoints/s2-pro`).
 - **`--decoder-checkpoint-path`**: Path to the codec checkpoint, e.g. `checkpoints/s2-pro/codec.pth`.
 - **`--whisper-model-dir`**: Directory for the Whisper model used for reference-audio transcription (default: `checkpoints/whisper-small-pt`). Omit or leave default if you use the button.
