@@ -113,10 +113,14 @@ This repository includes a Gradio WebUI (`tools/run_webui.py`) that supports S2-
 From the repository root:
 
 ```bash
-python tools/run_webui.py \
-  --llama-checkpoint-path checkpoints/s2-pro \
-  --decoder-checkpoint-path checkpoints/s2-pro/codec.pth \
-  --whisper-model-dir checkpoints/whisper-small-pt
+
+Using webui
+python tools/run_webui.py --llama-checkpoint-path checkpoints/s2-pro --decoder-checkpoint-path checkpoints/s2-pro/codec.pth --whisper-model-dir checkpoints/whisper-small-pt
+
+Using webui_v2 (Modify for Long contents)
+python tools/run_webui_v2.py --llama-checkpoint-path checkpoints/s2-pro --decoder-checkpoint-path checkpoints/s2-pro/codec.pth --whisper-model-dir checkpoints/whisper-small-pt
+
+
 ```
 
 - **`--llama-checkpoint-path`**: Directory containing the S2-Pro LLaMA weights (default: `checkpoints/s2-pro`).
